@@ -23,7 +23,7 @@ function parseCSVLine(line: string): string[] {
   return result;
 }
 
-function FormatPlayerName(name: string): string {
+function formatPlayerName(name: string): string {
   let cleaned = name.replace(/"/g, '');
     if (cleaned.includes(',')) {
     const parts = cleaned.split(',').map(part => part.trim());
@@ -47,7 +47,7 @@ export async function fetchCSVData(filePath: string) {
     columns.forEach((column, index) => {
       let value: string | number = values[index] || '';
       if (column === 'player_name') {
-        value = FormatPlayerName(value);
+        value = formatPlayerName(value);
       }if (column === 'toi') {
         value = value.replace(/(\d)\.(?=[^:]*$)/, '0$1');
         value = value.trim();

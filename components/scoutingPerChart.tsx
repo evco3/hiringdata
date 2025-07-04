@@ -69,24 +69,28 @@ export function ScoutingPerChart({ playerData, averageSG }: ScoutingPerChartProp
             .attr('height', d => y(0) - y(d.scouting_grade))
             .attr('fill', '#69b3a2');
 
-        const line = d3.line<{ season: string; avgPoints: number }>()
+        const filteredAverageSG = averageSG?.filter(d =>
+            processGrades.some(player => player.season.toString() === d.season)
+        ) || [];
+
+        const line = d3.line<{ season: string; avgScoutingGrade: number }>()
                     .x(d => (x(d.season) || 0) + x.bandwidth() / 2)
-                    .y(d => y(d.avgPoints));
-        
+                    .y(d => y(d.avgScoutingGrade));
+
         svg.append('path')
-                    .datum(averageSG?.map(d => ({ season: d.season, avgPoints: d.avgScoutingGrade })) || [])
+                    .datum(filteredAverageSG)
                     .attr('fill', 'none')
                     .attr('stroke', '#ff6347')
                     .attr('stroke-width', 2)
                     .attr('d', line);
         
         svg.selectAll('.average-point')
-                    .data(averageSG?.map(d => ({ season: d.season, avgPoints: d.avgScoutingGrade })) || [] )
+                    .data(filteredAverageSG)
                     .enter()
                     .append('circle')
                     .attr('class', 'average-point')
                     .attr('cx', d => (x(d.season) || 0) + x.bandwidth() / 2)
-                    .attr('cy', d => y(d.avgPoints))
+                    .attr('cy', d => y(d.avgScoutingGrade))
                     .attr('r', 3)
                     .attr('fill', '#ff6347');
         
@@ -121,6 +125,5 @@ export function ScoutingPerChart({ playerData, averageSG }: ScoutingPerChartProp
             .text('Average Grade');
 
     }, [playerData]);
-
     return <svg ref={svgRef} />;
 }

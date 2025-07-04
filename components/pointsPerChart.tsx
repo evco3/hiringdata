@@ -26,7 +26,7 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .range([margin.left, width - margin.right])
             .padding(0.1);
         const y = d3.scaleLinear()
-            .domain([0, d3.max(playerData, d => d.points) || 50])
+            .domain([0, 80])
             .nice()
             .range([height - margin.bottom, margin.top]);
 
@@ -64,19 +64,22 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('height', d => y(0) - y(d.points))
             .attr('fill', '#69b3a2');
 
+        const filteredAveragePoints = averagePoints?.filter(d => 
+            playerData.some(player => player.season.toString() === d.season)
+        ) || [];
         const line = d3.line<{ season: string; avgPoints: number }>()
             .x(d => (x(d.season) || 0) + x.bandwidth() / 2)
             .y(d => y(d.avgPoints));
 
         svg.append('path')
-            .datum(averagePoints?.map(d => ({ season: d.season, avgPoints: d.avgPoints })) || [])
+            .datum(filteredAveragePoints)
             .attr('fill', 'none')
             .attr('stroke', '#ff6347')
             .attr('stroke-width', 2)
             .attr('d', line);
 
         svg.selectAll('.average-point')
-            .data(averagePoints?.map(d => ({ season: d.season, avgPoints: d.avgPoints })) || [] )
+            .data(filteredAveragePoints)
             .enter()
             .append('circle')
             .attr('class', 'average-point')
@@ -115,6 +118,5 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('fill', '#333')
             .text('Average Points');
     }, [playerData]);
-
     return <svg ref={svgRef} />;
 }

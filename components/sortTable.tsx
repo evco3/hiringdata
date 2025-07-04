@@ -87,9 +87,7 @@ export function SortTable<TData extends Player, TValue>({
         <Input
           placeholder="Search players..."
           value={(table.getColumn("player_name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("player_name")?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => table.getColumn("player_name")?.setFilterValue(event.target.value)}
           className="max-w-sm"
         />
         <SeasonSelect
