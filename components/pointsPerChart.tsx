@@ -80,7 +80,7 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .enter()
             .append('circle')
             .attr('class', 'average-point')
-            .attr('cx', d => (x(d.season) || x.bandwidth() / 2))
+            .attr('cx', d => (x(d.season) || 0) + x.bandwidth() / 2)
             .attr('cy', d => y(d.avgPoints))
             .attr('r', 3)
             .attr('fill', '#ff6347');
@@ -89,28 +89,28 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('transform', `translate(${width / 2 - 50}, ${height - margin.bottom + 20})`);
 
         legend.append('rect')
-            .attr('x', 0)
+            .attr('x', -40)
             .attr('y', 0)
             .attr('width', 10)
             .attr('height', 10)
             .attr('fill', '#69b3a2');
         legend.append('text')
-            .attr('x', 15)
+            .attr('x', -25)
             .attr('y', 10)
             .attr('font-size', '10px')
             .attr('fill', '#333')
             .text("Player's Points");
 
         legend.append('line')
-            .attr('x1', 0)
-            .attr('y1', 20)
-            .attr('x2', 10)
-            .attr('y2', 20)
+            .attr('x1', 60)
+            .attr('y1', 7)
+            .attr('x2', 78)
+            .attr('y2', 7)
             .attr('stroke', '#ff6347')
             .attr('stroke-width', 2);
         legend.append('text')
-            .attr('x', 15)
-            .attr('y', 25)
+            .attr('x', 80)
+            .attr('y', 10)
             .attr('font-size', '10px')
             .attr('fill', '#333')
             .text('Average Points');
