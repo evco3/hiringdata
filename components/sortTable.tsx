@@ -30,12 +30,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   averagePoints?: { season: string; avgPoints: number }[]
+  averageSG?: { season: string; avgScoutingGrade: number }[]
 }
 
 export function SortTable<TData extends Player, TValue>({
   columns,
   data,
   averagePoints,
+  averageSG,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     {id: "points", desc: false },
@@ -51,11 +53,22 @@ export function SortTable<TData extends Player, TValue>({
     return data.filter((row) => row.season.toString() === yearFilter)
   }, [data, yearFilter])
 
-  console.log("Filtered Data:", filteredData)
+  const filteredColumns = React.useMemo(() => {
+    if(yearFilter === "All") {
+      return columns
+    }
+    return columns.filter ((column) => column.id !== "season")
+  }, [columns, yearFilter])
+
+  //console.log("Filtered Data:", filteredData)
+
+  React.useEffect(() => {
+    setExpanded({})
+  }, [yearFilter])
 
   const table = useReactTable({
     data: filteredData, 
-    columns,
+    columns: filteredColumns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -115,7 +128,7 @@ export function SortTable<TData extends Player, TValue>({
                 {row.getIsExpanded() && (
                   <TableRow>
                     <TableCell colSpan={columns.length} className="p-0">
-                      <ExpandedRow player={row.original} stats={data} averagePoints={averagePoints} />
+                      <ExpandedRow player={row.original} stats={data} averagePoints={averagePoints} averageSG={averageSG} />
                     </TableCell>
                   </TableRow>
                 )}

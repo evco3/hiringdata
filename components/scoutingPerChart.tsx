@@ -4,14 +4,15 @@ import { Player } from '@/app/columns'
 
 interface ScoutingPerChartProps {
     playerData: Player[]
+    averageSG?: { season: string; avgScoutingGrade: number }[]
 }
 
-export function ScoutingPerChart({ playerData }: ScoutingPerChartProps) {
+export function ScoutingPerChart({ playerData, averageSG }: ScoutingPerChartProps) {
     const svgRef = useRef<SVGSVGElement>(null);
     const processGrades = playerData.map(player => {
             if (player.scouting_grade && player.scouting_grade.includes(',')) {
                 const grades = player.scouting_grade.split(',').map(Number);
-                return { ...player, scouting_grade: Math.max(...grades) }; // Take the highest grade
+                return { ...player, scouting_grade: Math.max(...grades) }; 
             }
             return { ...player, scouting_grade: parseFloat(player.scouting_grade) || 0 };
         });
@@ -22,7 +23,7 @@ export function ScoutingPerChart({ playerData }: ScoutingPerChartProps) {
         const svg = d3.select(svgRef.current);
         const width = 300;
         const height = 200;
-        const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+        const margin = { top: 20, right: 30, bottom: 40, left: 40 };
 
         svg.attr('width', width).attr('height', height);
         svg.selectAll('*').remove(); 
@@ -31,7 +32,7 @@ export function ScoutingPerChart({ playerData }: ScoutingPerChartProps) {
             .range([margin.left, width - margin.right])
             .padding(0.1);
         const y = d3.scaleLinear()
-            .domain([0, d3.max(processGrades, d => d.scouting_grade) || 0]) // Fallback to 0 if scouting_grade is missing
+            .domain([0, 10])
             .nice()
             .range([height - margin.bottom, margin.top]);   
         const xAxis = d3.axisBottom(x);
@@ -67,6 +68,57 @@ export function ScoutingPerChart({ playerData }: ScoutingPerChartProps) {
             .attr('width', x.bandwidth())
             .attr('height', d => y(0) - y(d.scouting_grade))
             .attr('fill', '#69b3a2');
+
+        const line = d3.line<{ season: string; avgPoints: number }>()
+                    .x(d => (x(d.season) || 0) + x.bandwidth() / 2)
+                    .y(d => y(d.avgPoints));
+        
+        svg.append('path')
+                    .datum(averageSG?.map(d => ({ season: d.season, avgPoints: d.avgScoutingGrade })) || [])
+                    .attr('fill', 'none')
+                    .attr('stroke', '#ff6347')
+                    .attr('stroke-width', 2)
+                    .attr('d', line);
+        
+        svg.selectAll('.average-point')
+                    .data(averageSG?.map(d => ({ season: d.season, avgPoints: d.avgScoutingGrade })) || [] )
+                    .enter()
+                    .append('circle')
+                    .attr('class', 'average-point')
+                    .attr('cx', d => (x(d.season) || 0) + x.bandwidth() / 2)
+                    .attr('cy', d => y(d.avgPoints))
+                    .attr('r', 3)
+                    .attr('fill', '#ff6347');
+        
+        const legend = svg.append('g')
+            .attr('transform', `translate(${width / 2 - 50}, ${height - margin.bottom + 20})`);
+
+        legend.append('rect')
+            .attr('x', -40)
+            .attr('y', 0)
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('fill', '#69b3a2');
+        legend.append('text')
+            .attr('x', -25)
+            .attr('y', 10)
+            .attr('font-size', '10px')
+            .attr('fill', '#333')
+            .text("Player's Grade");
+
+        legend.append('line')
+            .attr('x1', 60)
+            .attr('y1', 7)
+            .attr('x2', 78)
+            .attr('y2', 7)
+            .attr('stroke', '#ff6347')
+            .attr('stroke-width', 2);
+        legend.append('text')
+            .attr('x', 80)
+            .attr('y', 10)
+            .attr('font-size', '10px')
+            .attr('fill', '#333')
+            .text('Average Grade');
 
     }, [playerData]);
 

@@ -16,7 +16,7 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
         const svg = d3.select(svgRef.current);
         const width = 300;
         const height = 200;
-        const margin = { top: 20, right: 30, bottom: 50, left: 40 }; 
+        const margin = { top: 20, right: 30, bottom: 40, left: 40 }; 
 
         svg.attr('width', width).attr('height', height);
         svg.selectAll('*').remove();

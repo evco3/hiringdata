@@ -73,8 +73,8 @@ export const columns: ColumnDef<Player>[] = [
     }
   },
   {
+    id: "season",
     accessorKey: "season",
-    invertSorting: true,
     header: "Season",
   },
   {
