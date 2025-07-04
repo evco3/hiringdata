@@ -14,7 +14,7 @@ interface SeasonSelectProps {
 }
 
 export function SeasonSelect({ value, onValueChange }: SeasonSelectProps) {
-  const seasons = ["2025", "2024", "2023", "2022", "2021", "2020", "2019"]
+  const seasons = ["All", "2025", "2024", "2023", "2022", "2021", "2020", "2019"]
 
   return (
     <div className="flex items-center gap-2">
@@ -28,6 +28,7 @@ export function SeasonSelect({ value, onValueChange }: SeasonSelectProps) {
             <SelectItem key={season} value={season}>
               {season}
             </SelectItem>
+            
           ))}
         </SelectContent>
       </Select>

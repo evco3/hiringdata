@@ -45,9 +45,14 @@ export async function fetchCSVData(filePath: string) {
     const values = parseCSVLine(line);
     const row: any = {};
     columns.forEach((column, index) => {
-      let value = values[index] || '';
+      let value: string | number = values[index] || '';
       if (column === 'player_name') {
         value = FormatPlayerName(value);
+      }if (column === 'toi') {
+        value = value.replace(/(\d)\.(?=[^:]*$)/, '0$1');
+        value = value.trim();
+      }if (['season', 'gp', 'shots', 'goals', 'assists', 'points'].includes(column)) {
+        value = parseInt(value.trim());
       }
       row[column] = value;
     });

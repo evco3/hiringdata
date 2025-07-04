@@ -1,11 +1,11 @@
 "use client"
 
-import { ColumnDef, Column } from "@tanstack/react-table"
+import { ColumnDef, Column, SortingFn } from "@tanstack/react-table"
 import { ArrowUpDown, ArrowUp, ArrowDown, ChevronDown, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 export type Player = {
-  season: number
+  season: string
   player_name: string
   team: string
   gp: number
@@ -41,6 +41,17 @@ const SortableHeader = ({ column, title }: HeaderProps) => {
   )
 }
 
+const parseTOI = (toi: string): number => {
+  const [minutes, seconds] = toi.split(":").map(Number)
+  return minutes * 60 + seconds
+}
+
+const sortTOI: SortingFn<Player> = (rowA, rowB) => {
+  const toiA = parseTOI(rowA.original.toi); 
+  const toiB = parseTOI(rowB.original.toi);
+  return toiA - toiB;
+};
+
 export const columns: ColumnDef<Player>[] = [
   {
     id: "expand",
@@ -64,7 +75,7 @@ export const columns: ColumnDef<Player>[] = [
   {
     accessorKey: "season",
     invertSorting: true,
-    header: ({ column }) => <SortableHeader column={column} title="Season" />,
+    header: "Season",
   },
   {
     accessorKey: "player_name",
@@ -83,6 +94,7 @@ export const columns: ColumnDef<Player>[] = [
     accessorKey: "toi",
     invertSorting: true,
     header: ({ column }) => <SortableHeader column={column} title="TOI" />,
+    sortingFn: sortTOI,
   },
   {
     accessorKey: "shots",
