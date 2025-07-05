@@ -10,6 +10,7 @@ export type Player = {
   team: string
   gp: number
   toi: string
+  toipergame: string
   shots: number
   goals: number
   assists: number
@@ -50,6 +51,12 @@ const sortTOI: SortingFn<Player> = (rowA, rowB) => {
   const toiA = parseTOI(rowA.original.toi); 
   const toiB = parseTOI(rowB.original.toi);
   return toiA - toiB;
+};
+
+const sortTOIPerGame: SortingFn<Player> = (rowA, rowB) => {
+  const toiPerGameA = parseFloat(rowA.original.toipergame);
+  const toiPerGameB = parseFloat(rowB.original.toipergame);
+  return toiPerGameA - toiPerGameB;
 };
 
 export const columns: ColumnDef<Player>[] = [
@@ -95,6 +102,12 @@ export const columns: ColumnDef<Player>[] = [
     invertSorting: true,
     header: ({ column }) => <SortableHeader column={column} title="TOI" />,
     sortingFn: sortTOI,
+  },
+  {
+    accessorKey: "toipergame",
+    invertSorting: true,
+    header: ({ column }) => <SortableHeader column={column} title="TOI/GP" />,
+    sortingFn: sortTOIPerGame,
   },
   {
     accessorKey: "shots",

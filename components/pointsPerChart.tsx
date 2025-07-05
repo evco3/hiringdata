@@ -4,11 +4,14 @@ import { Player } from '@/app/columns'
 
 interface PointsPerChartProps {
     playerData: Player[],
+    compareWith?: Player[] | null,
     averagePoints?: { season: string; avgPoints: number }[]
 }
 
-export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProps) {
+export function PointsPerChart({ playerData, compareWith, averagePoints }: PointsPerChartProps) {
     const svgRef = useRef<SVGSVGElement>(null);
+
+    console.log('Compare With:', compareWith);
 
     useEffect(() => {
         if (!svgRef.current) return;
@@ -16,7 +19,7 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
         const svg = d3.select(svgRef.current);
         const width = 300;
         const height = 200;
-        const margin = { top: 20, right: 30, bottom: 40, left: 40 }; 
+        const margin = { top: 20, right: 30, bottom: 50, left: 40 }; 
 
         svg.attr('width', width).attr('height', height);
         svg.selectAll('*').remove();
@@ -53,6 +56,8 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('fill', '#333')
             .text(`Points per Season`);
 
+        const barWidth = compareWith && compareWith.length > 0 ? x.bandwidth() / 2.4 : x.bandwidth();
+
         svg.selectAll('.bar')
             .data(playerData)
             .enter()
@@ -60,9 +65,20 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('class', 'bar')
             .attr('x', d => x(d.season.toString()) || 0)
             .attr('y', d => y(d.points))
-            .attr('width', x.bandwidth())
+            .attr('width', barWidth)
             .attr('height', d => y(0) - y(d.points))
             .attr('fill', '#69b3a2');
+        
+        svg.selectAll('.compare-bar')
+            .data(compareWith || [])
+            .enter()
+            .append('rect')
+            .attr('class', 'compare-bar')
+            .attr('x', d => (x(d.season.toString()) || 0) + barWidth + 1)
+            .attr('y', d => y(d.points))
+            .attr('width', barWidth)
+            .attr('height', d => y(0) - y(d.points))
+            .attr('fill', '#94a3b8');
 
         const filteredAveragePoints = averagePoints?.filter(d => 
             playerData.some(player => player.season.toString() === d.season)
@@ -102,21 +118,36 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('y', 10)
             .attr('font-size', '10px')
             .attr('fill', '#333')
-            .text("Player's Points");
+            .text(playerData[0].player_name);
 
         legend.append('line')
-            .attr('x1', 60)
+            .attr('x1', 70)
             .attr('y1', 7)
-            .attr('x2', 78)
+            .attr('x2', 88)
             .attr('y2', 7)
             .attr('stroke', '#ff6347')
             .attr('stroke-width', 2);
         legend.append('text')
-            .attr('x', 80)
+            .attr('x', 90)
             .attr('y', 10)
             .attr('font-size', '10px')
             .attr('fill', '#333')
             .text('League Average');
-    }, [playerData]);
+
+        if(compareWith && compareWith.length > 0) {
+            legend.append('rect')
+                .attr('x', -4)
+                .attr('y', 16)
+                .attr('width', 10)
+                .attr('height', 10)
+                .attr('fill', '#94a3b8');
+            svg.append('text')
+                .attr('x', width / 2)
+                .attr('y', height - margin.bottom + 45)
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '10px')
+                .text(compareWith[0].player_name );
+        }
+    }, [playerData, compareWith]);
     return <svg ref={svgRef} />;
 }

@@ -56,6 +56,17 @@ export async function fetchCSVData(filePath: string) {
       }
       row[column] = value;
     });
+
+    if(row.toi && row.gp) {
+      const [min,sec] = row.toi.split(':').map(Number);
+      const secondsPerGame = ((min * 60) + sec)/ row.gp;
+      const minutes = Math.floor(secondsPerGame / 60);
+      const seconds = parseInt((secondsPerGame % 60).toFixed(0));
+
+      row.toipergame = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+    } else {
+      row.toipergame = '0:00';
+    }
     return row;
   });
   
