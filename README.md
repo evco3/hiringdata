@@ -13,7 +13,7 @@ Or go to -> https://hiringdata.vercel.app
 - **Expandable Rows**: View detailed career statistics and charts for individual players. Be sure to use the select option to choose a player and see a head to head comparison.
 - **Charts**: Visualize average points and scouting grades per season.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Framework:** React + Next.js
 - **Styling:** Tailwind CSS + ShadCN UI
