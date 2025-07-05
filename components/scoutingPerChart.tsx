@@ -9,6 +9,8 @@ interface ScoutingPerChartProps {
 
 export function ScoutingPerChart({ playerData, averageSG }: ScoutingPerChartProps) {
     const svgRef = useRef<SVGSVGElement>(null);
+
+    //removes mutliple grades for players traded and takes highest grade each season
     const processGrades = playerData.map(player => {
             if (player.scouting_grade && player.scouting_grade.includes(',')) {
                 const grades = player.scouting_grade.split(',').map(Number);
@@ -122,7 +124,7 @@ export function ScoutingPerChart({ playerData, averageSG }: ScoutingPerChartProp
             .attr('y', 10)
             .attr('font-size', '10px')
             .attr('fill', '#333')
-            .text('Average Grade');
+            .text('League Average');
 
     }, [playerData]);
     return <svg ref={svgRef} />;

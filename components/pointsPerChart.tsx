@@ -116,7 +116,7 @@ export function PointsPerChart({ playerData, averagePoints }: PointsPerChartProp
             .attr('y', 10)
             .attr('font-size', '10px')
             .attr('fill', '#333')
-            .text('Average Points');
+            .text('League Average');
     }, [playerData]);
     return <svg ref={svgRef} />;
 }

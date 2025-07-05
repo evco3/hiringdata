@@ -46,17 +46,15 @@ export function SortTable<TData extends Player, TValue>({
   const [yearFilter, setYearFilter] = React.useState<string>("2025")
   const [expanded, setExpanded] = React.useState<ExpandedState>({})
 
+
+  //filtering data by year and showing season column if "all" year filters
   const filteredData = React.useMemo(() => {
-    if(yearFilter === "All") {
-      return data
-    }
+    if(yearFilter === "All") {return data}
     return data.filter((row) => row.season.toString() === yearFilter)
   }, [data, yearFilter])
 
   const filteredColumns = React.useMemo(() => {
-    if(yearFilter === "All") {
-      return columns
-    }
+    if(yearFilter === "All") {return columns}
     return columns.filter ((column) => column.id !== "season")
   }, [columns, yearFilter])
 
